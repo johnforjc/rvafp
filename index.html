@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code: Life or Die</title>
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
+</head>
+<body>
+
+    <script>
+        AFRAME.registerComponent('keyboard-input', {
+            init:function() {
+                let el = this.el;
+                let number = Math.ceil(Math.random()*100)
+                let attempt = 7
+                console.log(number)
+                let predicted = 0
+                
+                el.addEventListener("body-loaded", function(){
+                    document.addEventListener('keydown', function(e) {
+                        let kesempatan = document.querySelector("#kesempatan")
+                        let kataSandi = document.querySelector("#kataSandi")
+                        let cobaButton = document.querySelector("#cobaButton")
+                        let notifikasi = document.querySelector("#notifikasi")
+                        // console.log("%c" + e.key, "font-size:2em");
+                        
+                        
+                        if (e.key == "1" || e.key == "2" || e.key == "3" || e.key == "4" || e.key == "5" || e.key == "6" || e.key == "7" || e.key == "8" || e.key == "9" || e.key == "0") {
+                            let pressed = parseInt(e.key)
+                            predicted= predicted*10+pressed
+                            console.log(kataSandi)
+                            kataSandi.setAttribute("text", {value: predicted})
+                        }
+                        // New game
+                        if(e.key=="F2")
+                        {
+                            console.log(number)
+                            number = Math.ceil(Math.random()*100)
+                            attempt = 7
+                            predicted = 0
+                            kesempatan.setAttribute("text", {value: `${attempt} kesempatan lagi`})
+                            kataSandi.setAttribute("text", {value: predicted})
+                            cobaButton.setAttribute("text", {value: "Enter untuk menebak"})
+                            notifikasi.setAttribute("text", {value: "Coba tebak"})
+                        }
+                        // try
+                        if(e.key=="Enter")
+                        {
+                            if(predicted>number)
+                            {
+                                attempt-=1
+                                predicted=0
+                                kesempatan.setAttribute("text", {value: `${attempt} kesempatan lagi`})
+                                kataSandi.setAttribute("text", {value: predicted})
+                                notifikasi.setAttribute("text", {value: "Terlalu tinggi"})
+                            }
+                            else if(predicted<number)
+                            {
+                                attempt-=1
+                                predicted=0
+                                kesempatan.setAttribute("text", {value: `${attempt} kesempatan lagi`})
+                                kataSandi.setAttribute("text", {value: predicted})
+                                notifikasi.setAttribute("text", {value: "Terlalu rendah"})
+                            }
+                            else
+                            {
+                                cobaButton.setAttribute("text", {value: "Tekan F2 untuk bermain lagi"})
+                                notifikasi.setAttribute("text", {value: "Selamat anda benar"})
+                            }
+                            if(attempt == 0)
+                            {
+                                cobaButton.setAttribute("text", {value: "Tekan F2 untuk bermain lagi"})
+                                notifikasi.setAttribute("text", {value: "Maaf anda kehabisan kesempatan"})
+                            }
+                        }
+                    });
+                });
+            }
+        })
+    </script>
+    <a-scene keyboard-shortcuts="enterVR:false;" >
+        <a-assets>
+            <a-asset-items
+                id="peasant"
+                src="peasant/scene.gltf"
+            ></a-asset-items>
+            <a-asset-items
+                id="cauldron"
+                src="evil_cauldron/scene.gltf"
+            ></a-asset-items>
+            <a-asset-items
+                id="imp"
+                src="imp_character/scene.gltf"
+            ></a-asset-items>
+            <a-asset-items
+                id="box"
+                src="wooden-box/scene.gltf"
+            ></a-asset-items>
+            <a-asset-items
+                id="barrel"
+                src="barrel/scene.gltf"
+            ></a-asset-items>
+            <a-asset-items
+                id="chair"
+                src="chair/scene.gltf"
+            ></a-asset-items>
+        </a-assets>
+
+        <!-- wall -->
+        <a-plane color="#444444" position="0 1.5 -5" height="5" width="10" static-body>
+        </a-plane>
+
+        <!-- game menu
+        <a-entity id="game-name" text="font: mozillavr; width:7; value: Code: Die or Life" position="2.5 3 -5"></a-entity>
+        <a-entity startButton id="startButton" text="font: mozillavr; width:7; value: Start; opacity:1;" position="3.25 2 -5"></a-entity>  -->
+        
+        <!-- game started -->
+        <a-box keyboard-input color="#333333" position="0 -1 -1" height="0.2" width="15" depth="10" static-body></a-box>
+        <a-entity id="kesempatan" text="font: mozillavr; width:7; value: 7 kesempatan lagi; opacity:1" position="4.5 3.5 -5"></a-entity>
+        <a-entity id="perintah" text="font: mozillavr; width:7; value: Kata Kuncimu antara 0-100; opacity:1" position="2 3 -5"></a-entity>
+        <a-entity id="kataSandi" text="font: mozillavr; width:7; value:0; opacity:1" position="3.5 2.25 -5"></a-entity>
+        <a-entity id="cobaButton" text="font: mozillavr; width:7; value: Enter untuk menebak; opacity:1" position="2.5 1.5 -5"></a-entity>
+        <a-entity id="notifikasi" text="font: mozillavr; width:7; value:Coba tebak; opacity:1" position="2.5 1 -5"></a-entity>
+
+        <!-- <a-text kataSandi id="kataSandi" font="mozillavr" width='7' value='0' opacity=1 position="3.5 2.25 -5"></a-entity> -->
+
+        <!-- game selesai
+        <a-entity id="notifikasi" text="font: mozillavr; width:7; value: Code: Die or Life; opacity:0" position="2.5 3 -5"></a-entity>
+        <a-entity id="mainLagi" text="font: mozillavr; width:7; value: Main Lagi; opacity:0" position="2.85 0.5 -5"></a-entity> -->
+
+        <a-box color="#222222" position="-5 1.5 -1" height="5" width="0.2" depth="10" static-body></a-box>
+        <a-box color="#222222" position="5 1.5 -1" height="5" width="0.2" depth="10" static-body></a-box>
+        <a-box color="#333333" position="0 4 -1" height="0.2" width="15" depth="10" static-body></a-box>
+        <a-box color="#444444" position="0 1.5 4" height="5" width="15" depth="0.2" static-body></a-box>
+
+        <!-- imp gang -->
+        <a-entity 
+            gltf-model="#imp"
+            position = "0 -0.75 -4"  
+            dinamic-body
+        ></a-entity>
+        <a-entity 
+            gltf-model="#imp"
+            position = "1 -0.75 -3.5"  
+            rotation = "0 -12 0" 
+            dynamic-body
+        ></a-entity>
+        <a-entity 
+            gltf-model="#imp"
+            position = "3 -0.75 -1"
+            rotation = "0 -75 0"  
+            dynamic-body
+        ></a-entity>
+        <a-entity 
+            gltf-model="#imp"
+            position = "-2 -0.75 -2.5"  
+            rotation = "0 45 0" 
+            dynamic-body
+        ></a-entity>
+        <a-entity 
+            gltf-model="#imp"
+            position = "-1 -0.75 3"
+            rotation = "0 160 0"  
+            dynamic-body
+        ></a-entity>
+        <a-entity 
+            gltf-model="#imp"
+            position = "-3 -0.75 2"
+            rotation = "0 135 0"
+            dynamic-body
+        ></a-entity>
+        <a-entity 
+            gltf-model="#imp"
+            position = "2 -0.75 2"
+            rotation = "0 -135 0"
+            dynamic-body
+        ></a-entity>
+
+        <!-- any object -->
+        <a-entity 
+            gltf-model="#box"
+            position = "2 -0.5 3"
+            scale = "0.5 0.5 0.5"
+            dynamic-body
+        ></a-entity>
+        <a-entity 
+            gltf-model="#box"
+            position = "-3 -0.5 -4"
+            scale = "0.5 0.5 0.5"
+            rotation = "0 90 0"
+            dynamic-body
+        ></a-entity>
+        <a-entity 
+            gltf-model="#barrel"
+            position = "3 -0.5 -3"
+            scale = "0.75 0.75 0.75"
+            rotation = "0 90 0"
+            dynamic-body
+        ></a-entity>
+        <a-entity 
+            gltf-model="#chair"
+            position = "-3.5 0 3"
+            scale = "0.75 0.75 0.75"
+            rotation = "0 0 0"
+            dynamic-body
+        ></a-entity>
+       
+
+        <!-- cauldorn -->
+        <a-entity 
+            gltf-model="#cauldron"
+            position = "3 -2 1.5"  
+            scale = "2 2 2"
+            static-body
+        ></a-entity>
+
+        <!-- cursor -->
+        <a-camera wasd-controls-enabled="false">
+            <a-cursor></a-cursor>
+        </a-camera>
+    </a-scene>
+</body>
+</html>
